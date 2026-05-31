@@ -13,12 +13,55 @@ Query → Score nodes (BM25) → BFS traversal → Return ~250-750 tokens
 
 Instead of feeding 5,000-50,000 tokens of a full web page to your AI, Webify returns only the 3-5 most relevant sections (~250-750 tokens).
 
-## Quick start
+## Installation
+
+### Quick Install (Recommended)
+
+**macOS / Linux:**
+```bash
+curl -fsSL https://graperoot.dev/webify/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://graperoot.dev/webify/install.ps1 | iex
+```
+
+The installer will:
+- Download Webify to `~/.webify/`
+- Install Python dependencies (`mcp>=1.3.0`)
+- Auto-configure detected MCP tools (Claude Code, VS Code, Cursor, Windsurf, Zed)
+- Set up cache directory at `~/.cache/webify`
+
+**Requirements:** Python 3.9+, pip, git
+
+---
+
+### Manual Installation
+
+If you prefer manual setup or the auto-installer doesn't detect your tool:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/kunal12203/webify.git
+   cd webify
+   ```
+
+2. **Install the MCP package:**
+   ```bash
+   pip install "mcp>=1.3.0"
+   ```
+
+3. **Configure your MCP client** (see [Tool-Specific Setup](#tool-specific-setup) below)
+
+## Usage
 
 ### As a Claude Code MCP tool
 
 ```bash
-claude mcp add webify -- python3 /path/to/Webify/mcp_server.py
+# Already configured if you used the installer
+# Otherwise, manually add:
+claude mcp add webify -- python3 /path/to/webify/mcp_server.py
 ```
 
 Then use in any Claude Code session:
@@ -100,11 +143,121 @@ nodes = webify.retrieve("https://example.com/docs", "authentication")
 | `web_build(url)` | Pre-build graph for a URL (useful for multi-query pages) |
 | `web_stats(url)` | Show graph stats for a cached URL |
 
+## Tool-Specific Setup
+
+### Claude Code
+
+```bash
+claude mcp add webify -- python3 ~/.webify/mcp_server.py
+```
+
+Verify installation:
+```bash
+claude mcp list  # Should show "webify"
+```
+
+### VS Code (Continue / Cline)
+
+Add to `~/.continue/config.json`:
+```json
+{
+  "mcpServers": {
+    "webify": {
+      "command": "python3",
+      "args": ["/Users/YOUR_USERNAME/.webify/mcp_server.py"]
+    }
+  }
+}
+```
+
+**Note:** Replace `/Users/YOUR_USERNAME/` with your actual home directory path.
+
+### Cursor
+
+Add to `~/.cursor/mcp.json` (create if it doesn't exist):
+```json
+{
+  "mcpServers": {
+    "webify": {
+      "command": "python3",
+      "args": ["/Users/YOUR_USERNAME/.webify/mcp_server.py"],
+      "env": {}
+    }
+  }
+}
+```
+
+### Windsurf
+
+Add to `~/.windsurf/settings.json`:
+```json
+{
+  "mcp.servers": {
+    "webify": {
+      "command": "python3",
+      "args": ["/Users/YOUR_USERNAME/.webify/mcp_server.py"]
+    }
+  }
+}
+```
+
+### Zed
+
+Add to `~/.config/zed/settings.json`:
+```json
+{
+  "mcp_servers": {
+    "webify": {
+      "command": "python3",
+      "args": ["/Users/YOUR_USERNAME/.webify/mcp_server.py"]
+    }
+  }
+}
+```
+
+### Other MCP Clients
+
+Webify uses the stdio transport. Configure your MCP client with:
+- **Command:** `python3`
+- **Args:** `["/path/to/webify/mcp_server.py"]`
+- **Transport:** stdio
+
 ## Configuration
+
+### Environment Variables
 
 | Env var | Default | Description |
 |---------|---------|-------------|
 | `WEBIFY_CACHE_DIR` | `~/.cache/webify` | Where to store cached graphs |
+
+### Troubleshooting
+
+**Check Python version:**
+```bash
+python3 --version  # Must be >= 3.9
+```
+
+**Test MCP server directly:**
+```bash
+python3 ~/.webify/mcp_server.py
+# Should wait for stdin (MCP protocol active)
+# Press Ctrl+C to exit
+```
+
+**Check cache:**
+```bash
+ls ~/.cache/webify/  # Should show cached .json files after first use
+```
+
+**Verify MCP package:**
+```bash
+python3 -c "import mcp; print(mcp.__version__)"  # Should print version >= 1.3.0
+```
+
+**Common issues:**
+- **"mcp module not found"** → Run `pip install "mcp>=1.3.0"`
+- **"Permission denied"** → Make sure `mcp_server.py` is readable: `chmod +r ~/.webify/mcp_server.py`
+- **Tool doesn't see Webify** → Restart your editor after configuration changes
 
 ## Performance
 
