@@ -254,7 +254,7 @@ ls ~/.cache/webify/            # Check cache
 ```
 
 Common issues:
-- **"webify-mcp: command not found"** → `pip install webify-mcp`
+- **"webify-mcp: command not found"** → Run `pip install webify-mcp`
 - **Tool not detected** → Restart your editor after config changes
 - **web_find returns errors** → Set `ANTHROPIC_API_KEY` environment variable
 - **web_find returns "no_results"** → DDG is rate-limiting; set `BRAVE_SEARCH_API_KEY` for reliable search
