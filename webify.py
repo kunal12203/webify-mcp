@@ -1312,8 +1312,42 @@ def _compute_reward(source_results: list[dict]) -> float:
 # WEB SEARCH (DuckDuckGo HTML, no API key)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def search_web(query: str, max_results: int = 5) -> list[dict]:
-    """Search DuckDuckGo Lite (POST) and return [{url, title, snippet}] — no API key."""
+def _search_brave(query: str, max_results: int = 5) -> list[dict]:
+    """Search via Brave Search API. Requires BRAVE_SEARCH_API_KEY env var."""
+    import json as _json
+    from urllib.parse import urlencode
+    api_key = os.environ.get('BRAVE_SEARCH_API_KEY', '')
+    if not api_key:
+        return []
+    try:
+        params = urlencode({'q': query, 'count': max_results})
+        req = Request(f'https://api.search.brave.com/res/v1/web/search?{params}', headers={
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip',
+            'X-Subscription-Token': api_key,
+        })
+        response = urlopen(req, timeout=10, context=ssl_ctx)
+        raw = response.read()
+        if response.headers.get('Content-Encoding') == 'gzip':
+            import gzip
+            raw = gzip.decompress(raw)
+        data = _json.loads(raw.decode('utf-8'))
+        results = []
+        for item in data.get('web', {}).get('results', []):
+            results.append({
+                "url": item.get('url', ''),
+                "title": item.get('title', ''),
+                "snippet": item.get('description', ''),
+            })
+            if len(results) >= max_results:
+                break
+        return results
+    except (HTTPError, URLError, OSError, ValueError):
+        return []
+
+
+def _search_ddg(query: str, max_results: int = 5) -> list[dict]:
+    """Search DuckDuckGo Lite (POST) — no API key, may rate-limit."""
     from urllib.parse import urlencode, urlparse
     try:
         data = urlencode({'q': query, 'kl': 'us-en'}).encode()
@@ -1330,7 +1364,6 @@ def search_web(query: str, max_results: int = 5) -> list[dict]:
         return []
 
     results = []
-    # DDG Lite: links are plain https:// hrefs with visible title text
     for m in re.finditer(r'<a[^>]+href="(https?://[^"]+)"[^>]*>([^<]+)</a>', html):
         raw_url = _decode_entities(m.group(1))
         title = _decode_entities(m.group(2)).strip()
@@ -1344,6 +1377,14 @@ def search_web(query: str, max_results: int = 5) -> list[dict]:
             break
 
     return results
+
+
+def search_web(query: str, max_results: int = 5) -> list[dict]:
+    """Search the web. Uses Brave API if key is set, falls back to DDG Lite."""
+    results = _search_brave(query, max_results)
+    if results:
+        return results
+    return _search_ddg(query, max_results)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

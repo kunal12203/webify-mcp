@@ -240,7 +240,46 @@ print(result["content"])     # Relevant sections only (~376 tokens)
 | Env var | Required | Description |
 |---------|----------|-------------|
 | `ANTHROPIC_API_KEY` | For `web_find` | Haiku synthesis + bandit learning |
+| `BRAVE_SEARCH_API_KEY` | Recommended | Reliable search ([free 2k queries/mo](https://brave.com/search/api/)) |
 | `WEBIFY_CACHE_DIR` | No | Cache location (default: `~/.cache/webify`) |
+
+**Search priority:** Brave API (if key set) → DuckDuckGo Lite (free, no key, may rate-limit under heavy use).
+
+### Setting API Keys
+
+**macOS / Linux** — add to `~/.zshrc` or `~/.bashrc`:
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+export BRAVE_SEARCH_API_KEY="BSA..."
+```
+Then restart your terminal or run `source ~/.zshrc`.
+
+**Windows (PowerShell)** — set permanently:
+```powershell
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-ant-...", "User")
+[Environment]::SetEnvironmentVariable("BRAVE_SEARCH_API_KEY", "BSA...", "User")
+```
+Then restart your terminal.
+
+**Per-tool env (Claude Code, Cursor, Windsurf)** — add to your MCP config:
+```json
+{
+  "mcpServers": {
+    "webify": {
+      "command": "python3",
+      "args": ["~/.webify/mcp_server.py"],
+      "env": {
+        "ANTHROPIC_API_KEY": "sk-ant-...",
+        "BRAVE_SEARCH_API_KEY": "BSA..."
+      }
+    }
+  }
+}
+```
+
+**Get your keys:**
+- Anthropic: https://console.anthropic.com/settings/keys
+- Brave Search: https://brave.com/search/api/ (free plan — 2,000 queries/month)
 
 ## Troubleshooting
 
@@ -256,6 +295,7 @@ Common issues:
 - **"Permission denied"** → `chmod +r ~/.webify/mcp_server.py`
 - **Tool not detected** → Restart your editor after config changes
 - **web_find returns errors** → Set `ANTHROPIC_API_KEY` environment variable
+- **web_find returns "no_results"** → DDG is rate-limiting; set `BRAVE_SEARCH_API_KEY` for reliable search
 
 ## License
 
