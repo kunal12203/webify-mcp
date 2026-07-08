@@ -53,7 +53,7 @@ Adapts depth to query complexity. Simple questions hit 3 sources. Multi-dimensio
 URL → Fetch → Semantic graph → BFS traversal → ~250–750 tokens
 ```
 
-Returns only the relevant sections from a page. Skips the 5,000–50,000 tokens you'd get with WebFetch.
+Scores nodes against your query, returns only the relevant subtree — 80–300 tokens instead of the 3,000–15,000 tokens of full page text WebFetch puts in context.
 
 ---
 
