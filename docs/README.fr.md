@@ -15,7 +15,7 @@ Un skill par [GrapeRoot](https://graperoot.dev)
 
 **web_find** effectue une recherche sur DuckDuckGo, construit des graphes semantiques a partir de plusieurs sources en parallele, extrait le contenu pertinent via BM25, et synthetise avec Haiku. Il adapte la profondeur en fonction de la complexite de la requete -- les requetes factuelles simples interrogent 3 sources, tandis que les requetes de recherche multidimensionnelles montent a 6+ sources avec une extraction multi-aspect.
 
-**web_lookup** recupere une seule page, construit un graphe de hierarchie de titres, et renvoie uniquement les noeuds pertinents (~250-750 tokens au lieu de 5 000-50 000).
+**web_lookup** récupère une seule page, évalue les nœuds selon votre requête et renvoie uniquement le sous-arbre pertinent — 80–300 tokens au lieu des 3 000–15 000 tokens de texte complet que WebFetch charge en contexte.
 
 ## Benchmarks
 
