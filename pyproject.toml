@@ -1,6 +1,6 @@
 [project]
 name = "webify-mcp"
-version = "0.0.1"
+version = "0.0.2"
 description = "Adaptive web research for AI coding agents — 91% of Deep Research quality at 5% cost"
 readme = "README.md"
 license = "MIT"
