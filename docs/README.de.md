@@ -40,7 +40,7 @@ Webify erreicht 91 % der Deep-Research-Qualitaet bei 5 % der Kosten.
 ### Manuell
 
 ```bash
-git clone https://github.com/kunal12203/webify.git
+git clone https://github.com/kunal12203/webify-mcp.git
 cd webify
 pip install "mcp>=1.3.0"
 ```

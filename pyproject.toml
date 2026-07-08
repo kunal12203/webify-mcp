@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/kunal12203/webify"
-Issues = "https://github.com/kunal12203/webify/issues"
+Homepage = "https://github.com/kunal12203/webify-mcp"
+Issues = "https://github.com/kunal12203/webify-mcp/issues"
 
 [project.scripts]
 webify-mcp = "mcp_server:main"

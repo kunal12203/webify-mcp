@@ -40,7 +40,7 @@ Webify는 비용의 5%로 Deep Research 품질의 91%를 달성합니다.
 ### 수동 설치
 
 ```bash
-git clone https://github.com/kunal12203/webify.git
+git clone https://github.com/kunal12203/webify-mcp.git
 cd webify
 pip install "mcp>=1.3.0"
 ```

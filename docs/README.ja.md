@@ -40,7 +40,7 @@ WebifyはDeep Researchの品質の91%を、コスト5%で達成します。
 ### 手動インストール
 
 ```bash
-git clone https://github.com/kunal12203/webify.git
+git clone https://github.com/kunal12203/webify-mcp.git
 cd webify
 pip install "mcp>=1.3.0"
 ```
