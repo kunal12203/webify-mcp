@@ -35,7 +35,6 @@ Webify erreicht 91 % der Deep-Research-Qualitaet bei 5 % der Kosten.
 ### Schnellinstallation
 
 ```bash
-curl -fsSL https://graperoot.dev/webify/install.sh | bash
 ```
 
 ### Manuell

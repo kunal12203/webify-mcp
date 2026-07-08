@@ -35,7 +35,6 @@ WebifyはDeep Researchの品質の91%を、コスト5%で達成します。
 ### クイックインストール
 
 ```bash
-curl -fsSL https://graperoot.dev/webify/install.sh | bash
 ```
 
 ### 手動インストール

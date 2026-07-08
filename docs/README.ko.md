@@ -35,7 +35,6 @@ Webify는 비용의 5%로 Deep Research 품질의 91%를 달성합니다.
 ### 빠른 설치
 
 ```bash
-curl -fsSL https://graperoot.dev/webify/install.sh | bash
 ```
 
 ### 수동 설치

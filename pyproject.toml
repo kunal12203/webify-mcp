@@ -1,14 +1,14 @@
 [project]
-name = "webify"
-version = "1.0.0"
-description = "Semantic web graph for AI coding agents — 74% cheaper than full page reads"
+name = "webify-mcp"
+version = "0.0.1"
+description = "Adaptive web research for AI coding agents — 91% of Deep Research quality at 5% cost"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 authors = [
     {name = "GrapeRoot", email = "support@graperoot.dev"},
 ]
-keywords = ["mcp", "claude", "web", "graph", "semantic", "retrieval", "ai"]
+keywords = ["mcp", "claude", "web", "graph", "semantic", "retrieval", "ai", "search", "research"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -17,17 +17,23 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
-
-[project.optional-dependencies]
-mcp = ["mcp>=1.3.0"]
+dependencies = [
+    "mcp>=1.3.0",
+]
 
 [project.urls]
-Homepage = "https://github.com/graperoot/webify"
-Issues = "https://github.com/graperoot/webify/issues"
+Homepage = "https://github.com/kunal12203/webify"
+Issues = "https://github.com/kunal12203/webify/issues"
 
 [project.scripts]
-webify = "webify:main"
+webify-mcp = "mcp_server:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["webify.py", "mcp_server.py"]
+
+[tool.hatch.build.targets.sdist]
+include = ["webify.py", "mcp_server.py", "README.md", "LICENSE", "pyproject.toml"]

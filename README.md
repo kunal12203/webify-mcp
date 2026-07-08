@@ -74,20 +74,18 @@ Query → BM25 score nodes → BFS traversal → ~250-750 tokens
 ## Installation
 
 ```bash
-git clone https://github.com/kunal12203/webify.git ~/.webify
-pip install "mcp>=1.3.0"
-claude mcp add webify -- python3 ~/.webify/mcp_server.py
+pip install webify-mcp
+claude mcp add webify -- webify-mcp
 ```
 
-That's it. Works with any MCP client — see [Tool-Specific Setup](#tool-specific-setup) for VS Code, Cursor, Windsurf, Zed.
+That's it. Two commands. Works with any MCP client — see [Tool-Specific Setup](#tool-specific-setup) for VS Code, Cursor, Windsurf, Zed.
 
-**Requirements:** Python 3.9+, pip, git
+**Requirements:** Python 3.9+, pip
 
 ## Updating
 
 ```bash
-cd ~/.webify
-git pull origin master
+pip install --upgrade webify-mcp
 ```
 
 ## Tool-Specific Setup
@@ -106,8 +104,7 @@ Add to `~/.continue/config.json`:
 {
   "mcpServers": {
     "webify": {
-      "command": "python3",
-      "args": ["~/.webify/mcp_server.py"]
+      "command": "webify-mcp"
     }
   }
 }
@@ -120,8 +117,7 @@ Add to `~/.cursor/mcp.json`:
 {
   "mcpServers": {
     "webify": {
-      "command": "python3",
-      "args": ["~/.webify/mcp_server.py"],
+      "command": "webify-mcp",
       "env": {}
     }
   }
@@ -135,8 +131,7 @@ Add to `~/.windsurf/settings.json`:
 {
   "mcp.servers": {
     "webify": {
-      "command": "python3",
-      "args": ["~/.webify/mcp_server.py"]
+      "command": "webify-mcp"
     }
   }
 }
@@ -149,8 +144,7 @@ Add to `~/.config/zed/settings.json`:
 {
   "mcp_servers": {
     "webify": {
-      "command": "python3",
-      "args": ["~/.webify/mcp_server.py"]
+      "command": "webify-mcp"
     }
   }
 }
@@ -159,8 +153,7 @@ Add to `~/.config/zed/settings.json`:
 ### Other MCP Clients
 
 Webify uses stdio transport. Configure with:
-- **Command:** `python3`
-- **Args:** `["/path/to/webify/mcp_server.py"]`
+- **Command:** `webify-mcp`
 - **Transport:** stdio
 
 ## MCP Tools
@@ -238,8 +231,7 @@ Then restart your terminal.
 {
   "mcpServers": {
     "webify": {
-      "command": "python3",
-      "args": ["~/.webify/mcp_server.py"],
+      "command": "webify-mcp",
       "env": {
         "ANTHROPIC_API_KEY": "sk-ant-...",
         "BRAVE_SEARCH_API_KEY": "BSA..."
@@ -257,14 +249,12 @@ Then restart your terminal.
 
 ```bash
 python3 --version              # Must be >= 3.9
-python3 -c "import mcp"       # Check MCP package
+webify-mcp                     # Test server (Ctrl+C to exit)
 ls ~/.cache/webify/            # Check cache
-python3 ~/.webify/mcp_server.py  # Test server (Ctrl+C to exit)
 ```
 
 Common issues:
-- **"mcp module not found"** → `pip install "mcp>=1.3.0"`
-- **"Permission denied"** → `chmod +r ~/.webify/mcp_server.py`
+- **"webify-mcp: command not found"** → `pip install webify-mcp`
 - **Tool not detected** → Restart your editor after config changes
 - **web_find returns errors** → Set `ANTHROPIC_API_KEY` environment variable
 - **web_find returns "no_results"** → DDG is rate-limiting; set `BRAVE_SEARCH_API_KEY` for reliable search

@@ -146,5 +146,9 @@ def web_stats(url: str) -> dict:
         return {"ok": False, "error": str(e)}
 
 
-if __name__ == "__main__":
+def main():
     mcp.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()
