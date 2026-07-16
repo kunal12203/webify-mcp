@@ -332,6 +332,64 @@ def _extract_next_data(html: str) -> Optional[str]:
         return None
 
 
+def _walk_json_ld_node(node, _depth: int = 0) -> list[str]:
+    """Recursively extract human-readable text from a JSON-LD node."""
+    if _depth > 6:
+        return []
+    parts = []
+    if isinstance(node, list):
+        for item in node:
+            parts.extend(_walk_json_ld_node(item, _depth))
+        return parts
+    if not isinstance(node, dict):
+        return []
+
+    # @graph: unwrap and recurse — don't also process the wrapper's own fields
+    if '@graph' in node:
+        graph = node['@graph']
+        if isinstance(graph, list):
+            for item in graph:
+                parts.extend(_walk_json_ld_node(item, _depth + 1))
+        return parts
+
+    # Collect primary content (pick the richest field, not all of them)
+    content = None
+    for key in ('articleBody', 'text', 'content', 'description', 'abstract'):
+        val = node.get(key)
+        if isinstance(val, str) and len(val) > 40:
+            content = val
+            break
+
+    # Emit as "## heading\ncontent" when a name/headline is present, else bare
+    name = node.get('name') or node.get('headline')
+    if isinstance(name, str) and len(name) > 3 and content:
+        parts.append(f"## {name}\n{content}")
+    elif content:
+        parts.append(content)
+
+    # FAQ / Q&A and nested-list patterns
+    for key in ('mainEntity', 'hasPart', 'itemListElement', 'about'):
+        val = node.get(key)
+        if isinstance(val, list):
+            for entity in val[:30]:
+                if not isinstance(entity, dict):
+                    continue
+                q = entity.get('name') or entity.get('question', {})
+                if isinstance(q, dict):
+                    q = q.get('text', '')
+                a = entity.get('acceptedAnswer') or entity.get('answer', {})
+                if isinstance(a, dict):
+                    a = a.get('text', '') or a.get('description', '')
+                if q and a and isinstance(q, str) and isinstance(a, str):
+                    parts.append(f"## {q}\n{a}")
+                else:
+                    parts.extend(_walk_json_ld_node(entity, _depth + 1))
+        elif isinstance(val, dict):
+            parts.extend(_walk_json_ld_node(val, _depth + 1))
+
+    return parts
+
+
 def _extract_json_ld(html: str) -> Optional[str]:
     matches = re.findall(r'<script[^>]*type="application/ld\+json"[^>]*>(.*?)</script>', html, re.DOTALL)
     if not matches:
@@ -340,22 +398,20 @@ def _extract_json_ld(html: str) -> Optional[str]:
     for raw in matches:
         try:
             data = json.loads(raw)
-            if isinstance(data, dict):
-                for key in ('articleBody', 'description', 'text', 'content', 'mainEntity'):
-                    if key in data and isinstance(data[key], str) and len(data[key]) > 100:
-                        parts.append(data[key])
-                if 'mainEntity' in data and isinstance(data['mainEntity'], list):
-                    for entity in data['mainEntity'][:20]:
-                        if isinstance(entity, dict):
-                            q = entity.get('name', '')
-                            a = entity.get('acceptedAnswer', {})
-                            if isinstance(a, dict):
-                                a = a.get('text', '')
-                            if q and a:
-                                parts.append(f"## {q}\n{a}")
+            # Root may be a list of entities
+            nodes = data if isinstance(data, list) else [data]
+            for node in nodes:
+                parts.extend(_walk_json_ld_node(node))
         except (json.JSONDecodeError, TypeError):
             continue
-    return "\n\n".join(parts) if parts else None
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    deduped = []
+    for p in parts:
+        if p not in seen:
+            seen.add(p)
+            deduped.append(p)
+    return "\n\n".join(deduped) if deduped else None
 
 
 def _extract_nuxt_data(html: str) -> Optional[str]:
